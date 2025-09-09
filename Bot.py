@@ -54,8 +54,9 @@ class AddressBook(UserDict):
     def add_record(self, record: Record):
         if record.name.value in self.data:
             print(f"Контакт {record.name.value} вже існує!")
-        return
-        self.data[record.name.value] = record
+        else:
+            self.data[record.name.value] = record
+
 
     def find(self, name:str):
                 return self.data.get(name)
