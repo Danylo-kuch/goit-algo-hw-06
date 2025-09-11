@@ -10,10 +10,10 @@ class Name(Field):
 		pass
 
 class Phone(Field):
-        def __init__(self, value):
-            if len(value) != 10:
-                raise ValueError("Номер телефону повинен містити рівно 10 цифр")
-            super().__init__(value)
+    def __init__(self, value):
+        if len(value) != 10 or not value.isdigit():
+            raise ValueError("Номер телефону повинен містити рівно 10 цифр")
+        super().__init__(value)
 
 class Record:
     def __init__(self, name):
@@ -29,18 +29,19 @@ class Record:
         self.phones.append(new_phone)
 
     def remove_phone(self, phone: str):
-        for phones in self.phones:
-            if phones.value == phone:
-                self.phones.remove(phones)
-                return
-        return f"номер телефону: {phone} не в листі"
+        phone_obj = self.find_phone(phone)
+        if phone_obj:
+            self.phones.remove(phone_obj)
+        else:
+            raise ValueError (f"Номер {phone} не було знайдено")
     
     def edit_phone(self, old:str, new:str):
-        for i,phones in enumerate(self.phones):
-            if phones.value == old:
-                self.phones[i] = Phone(new)
-                return
-        raise ValueError("Старий номер не було знайдено")
+        phone_obj = self.find_phone(old)
+        if phone_obj:
+            self.remove_phone(old)
+            self.add_phone(new)
+        else:
+            raise ValueError("Старий номер не було знайдено")
     
     def find_phone(self, phone:str):
         for phones in self.phones:
@@ -53,19 +54,24 @@ class AddressBook(UserDict):
     
     def add_record(self, record: Record):
         if record.name.value in self.data:
-            print(f"Контакт {record.name.value} вже існує!")
+            raise ValueError(f"Контакт {record.name.value} вже існує!")
         else:
             self.data[record.name.value] = record
 
 
-    def find(self, name:str):
-                return self.data.get(name)
+    def find(self, name: str):
+        record = self.data.get(name)
+        if not record:
+            raise ValueError(f"Контакт {name} не знайдено")
+        return record
+
     
     def delete(self, name: str):
-            if name in self.data:
-                del self.data[name]
-            else:
-                return f"Ім'я {name} не було знайдено"
+        if self.data.get(name):
+            del self.data[name]
+        else:
+            raise ValueError(f"Ім'я {name} не було знайдено")
+
             
     def __str__(self):
         result = []
