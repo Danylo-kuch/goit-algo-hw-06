@@ -38,8 +38,8 @@ class Record:
     def edit_phone(self, old:str, new:str):
         phone_obj = self.find_phone(old)
         if phone_obj:
-            self.remove_phone(old)
             self.add_phone(new)
+            self.remove_phone(old)
         else:
             raise ValueError("Старий номер не було знайдено")
     
